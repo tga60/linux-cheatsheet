@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>linux-command-cheatsheet.html</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --neutral-50: #f9fafb;
+            --neutral-100: #f3f4f6;
+            --neutral-200: #e5e7eb;
+            --neutral-300: #d1d5db;
+            --neutral-400: #9ca3af;
+            --neutral-500: #6b7280;
+            --neutral-600: #4b5563;
+            --neutral-700: #374151;
+            --neutral-800: #1f2937;
+            --neutral-900: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--neutral-800);
+            background-color: var(--neutral-50);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--neutral-800);
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--neutral-600);
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .tab-button {
+            padding: 12px 20px;
+            background-color: var(--neutral-100);
+            border: none;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            font-weight: 500;
+            color: var(--neutral-600);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            margin-bottom: -1px;
+        }
+
+        .tab-button:hover {
+            background-color: var(--neutral-200);
+            color: var(--neutral-700);
+        }
+
+        .tab-button.active {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--neutral-200);
+            border-bottom: 1px solid white;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .commands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .command-card {
+            background-color: var(--neutral-50);
+            border-radius: 6px;
+            padding: 16px;
+            border: 1px solid var(--neutral-200);
+            position: relative;
+        }
+
+        .command-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--neutral-800);
+            margin-bottom: 8px;
+            display: inline-block;
+            cursor: help;
+            border-bottom: 1px dashed var(--neutral-400);
+        }
+
+        .command-example {
+            font-family: 'Courier New', monospace;
+            background-color: var(--neutral-800);
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .command-tooltip {
+            visibility: hidden;
+            width: 250px;
+            background-color: var(--neutral-800);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .command-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--neutral-800) transparent transparent transparent;
+        }
+
+        .command-name:hover + .command-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .category-title {
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px 0;
+            color: var(--neutral-500);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--neutral-200);
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            .tabs {
+                display: flex;
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 5px;
+                gap: 2px;
+            }
+            
+            .tab-button {
+                padding: 10px 15px;
+                font-size: 0.85rem;
+                flex-shrink: 0;
+            }
+            
+            .commands-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-content {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Linux Command Cheat Sheet</h1>
+            <p>A quick reference guide for common Linux commands</p>
+        </header>
+
+        <div class="tabs" id="tabs">
+            <button class="tab-button active" data-tab="file-system">File System</button>
+            <button class="tab-button" data-tab="process-management">Process Management</button>
+            <button class="tab-button" data-tab="networking">Networking</button>
+            <button class="tab-button" data-tab="permissions">Permissions & Ownership</button>
+            <button class="tab-button" data-tab="package-management">Package Management</button>
+            <button class="tab-button" data-tab="user-management">User Management</button>
+            <button class="tab-button" data-tab="system-info">System Info & Monitoring</button>
+            <button class="tab-button" data-tab="compression">Compression & Archiving</button>
+            <button class="tab-button" data-tab="disk">Disk & Partitioning</button>
+            <button class="tab-button" data-tab="misc">Miscellaneous Utilities</button>
+        </div>
+
+        <!-- File System Tab -->
+        <div class="tab-content active" id="file-system">
+            <h2 class="category-title">File System Commands</h2>
+            <div class="commands-grid">
+                <div class="command-card">
+                    <span class="command-name">ls</span>
+                    <div class="command-tooltip">List directory contents</div>
+                    <div class="command-example">ls -la</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">cd</span>
+                    <div class="command-tooltip">Change directory</div>
+                    <div class="command-example">cd /path/to/directory</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">pwd</span>
+                    <div class="command-tooltip">Print working directory</div>
+                    <div class="command-example">pwd</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">mkdir</span>
+                    <div class="command-tooltip">Create new directory</div>
+                    <div class="command-example">mkdir new_directory</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">rm</span>
+                    <div class="command-tooltip">Remove files or directories</div>
+                    <div class="command-example">rm -rf directory</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">cp</span>
+                    <div class="command-tooltip">Copy files or directories</div>
+                    <div class="command-example">cp file.txt /destination/</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">mv</span>
+                    <div class="command-tooltip">Move or rename files/directories</div>
+                    <div class="command-example">mv file.txt new_name.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">touch</span>
+                    <div class="command-tooltip">Create empty file or update timestamp</div>
+                    <div class="command-example">touch newfile.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">find</span>
+                    <div class="command-tooltip">Search for files in directory hierarchy</div>
+                    <div class="command-example">find /home -name "*.txt"</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">cat</span>
+                    <div class="command-tooltip">Print file contents to standard output</div>
+                    <div class="command-example">cat file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">less</span>
+                    <div class="command-tooltip">View file contents with pagination</div>
+                    <div class="command-example">less large_file.log</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">head</span>
+                    <div class="command-tooltip">Display first lines of a file</div>
+                    <div class="command-example">head -n 10 file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">tail</span>
+                    <div class="command-tooltip">Display last lines of a file</div>
+                    <div class="command-example">tail -f /var/log/syslog</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">nano</span>
+                    <div class="command-tooltip">Simple text editor</div>
+                    <div class="command-example">nano file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">ln</span>
+                    <div class="command-tooltip">Create links between files</div>
+                    <div class="command-example">ln -s target_file link_name</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Process Management Tab -->
+        <div class="tab-content" id="process-management">
+            <h2 class="category-title">Process Management Commands</h2>
+            <div class="commands-grid">
+                <div class="command-card">
+                    <span class="command-name">ps</span>
+                    <div class="command-tooltip">Report a snapshot of current processes</div>
+                    <div class="command-example">ps aux</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">top</span>
+                    <div class="command-tooltip">Display dynamic real-time view of running processes</div>
+                    <div class="command-example">top</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">htop</span>
+                    <div class="command-tooltip">Interactive process viewer (enhanced version of top)</div>
+                    <div class="command-example">htop</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">kill</span>
+                    <div class="command-tooltip">Terminate processes by ID</div>
+                    <div class="command-example">kill -9 1234</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">killall</span>
+                    <div class="command-tooltip">Kill processes by name</div>
+                    <div class="command-example">killall firefox</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">pkill</span>
+                    <div class="command-tooltip">Kill processes by name or other attributes</div>
+                    <div class="command-example">pkill -f "process_pattern"</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">bg</span>
+                    <div class="command-tooltip">Send process to background</div>
+                    <div class="command-example">bg %1</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">fg</span>
+                    <div class="command-tooltip">Bring process to foreground</div>
+                    <div class="command-example">fg %1</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">jobs</span>
+                    <div class="command-tooltip">List active jobs</div>
+                    <div class="command-example">jobs -l</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">nohup</span>
+                    <div class="command-tooltip">Run command immune to hangups</div>
+                    <div class="command-example">nohup command &</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">nice</span>
+                    <div class="command-tooltip">Run a program with modified scheduling priority</div>
+                    <div class="command-example">nice -n 10 command</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">renice</span>
+                    <div class="command-tooltip">Alter priority of running processes</div>
+                    <div class="command-example">renice -n 10 -p 1234</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Networking Tab -->
+        <div class="tab-content" id="networking">
+            <h2 class="category-title">Networking Commands</h2>
+            <div class="commands-grid">
+                <div class="command-card">
+                    <span class="command-name">ifconfig</span>
+                    <div class="command-tooltip">Configure network interface parameters</div>
+                    <div class="command-example">ifconfig eth0</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">ip</span>
+                    <div class="command-tooltip">Show/manipulate routing, devices, policy routing and tunnels</div>
+                    <div class="command-example">ip addr show</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">ping</span>
+                    <div class="command-tooltip">Send ICMP ECHO_REQUEST to network hosts</div>
+                    <div class="command-example">ping google.com</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">netstat</span>
+                    <div class="command-tooltip">Print network connections, routing tables, interface stats</div>
+                    <div class="command-example">netstat -tuln</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">ss</span>
+                    <div class="command-tooltip">Utility to investigate sockets (replacement for netstat)</div>
+                    <div class="command-example">ss -tuln</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">traceroute</span>
+                    <div class="command-tooltip">Print the route packets trace to network host</div>
+                    <div class="command-example">traceroute google.com</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">nslookup</span>
+                    <div class="command-tooltip">Query Internet name servers</div>
+                    <div class="command-example">nslookup google.com</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">dig</span>
+                    <div class="command-tooltip">DNS lookup utility</div>
+                    <div class="command-example">dig google.com</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">wget</span>
+                    <div class="command-tooltip">Non-interactive network downloader</div>
+                    <div class="command-example">wget https://example.com/file</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">curl</span>
+                    <div class="command-tooltip">Transfer data from or to a server</div>
+                    <div class="command-example">curl -O https://example.com/file</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">ssh</span>
+                    <div class="command-tooltip">OpenSSH SSH client (remote login program)</div>
+                    <div class="command-example">ssh user@hostname</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">scp</span>
+                    <div class="command-tooltip">Secure copy (remote file copy program)</div>
+                    <div class="command-example">scp file.txt user@host:/path</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">rsync</span>
+                    <div class="command-tooltip">Fast, versatile file copying tool</div>
+                    <div class="command-example">rsync -av source/ dest/</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">iptables</span>
+                    <div class="command-tooltip">Administration tool for IPv4 packet filtering and NAT</div>
+                    <div class="command-example">iptables -L</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">nc</span>
+                    <div class="command-tooltip">Netcat - networking utility for reading/writing network connections</div>
+                    <div class="command-example">nc -l 1234</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permissions Tab -->
+        <div class="tab-content" id="permissions">
+            <h2 class="category-title">Permissions & Ownership Commands</h2>
+            <div class="commands-grid">
+                <div class="command-card">
+                    <span class="command-name">chmod</span>
+                    <div class="command-tooltip">Change file mode bits (permissions)</div>
+                    <div class="command-example">chmod 755 file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">chown</span>
+                    <div class="command-tooltip">Change file owner and group</div>
+                    <div class="command-example">chown user:group file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">chgrp</span>
+                    <div class="command-tooltip">Change group ownership</div>
+                    <div class="command-example">chgrp group file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">umask</span>
+                    <div class="command-tooltip">Set file mode creation mask</div>
+                    <div class="command-example">umask 022</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">sudo</span>
+                    <div class="command-tooltip">Execute a command as another user, typically superuser</div>
+                    <div class="command-example">sudo apt update</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">su</span>
+                    <div class="command-tooltip">Change user ID or become superuser</div>
+                    <div class="command-example">su - username</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">visudo</span>
+                    <div class="command-tooltip">Edit sudoers file safely</div>
+                    <div class="command-example">visudo</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">getfacl</span>
+                    <div class="command-tooltip">Get file access control lists</div>
+                    <div class="command-example">getfacl file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">setfacl</span>
+                    <div class="command-tooltip">Set file access control lists</div>
+                    <div class="command-example">setfacl -m u:user:rwx file.txt</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Package Management Tab -->
+        <div class="tab-content" id="package-management">
+            <h2 class="category-title">Package Management Commands</h2>
+            <div class="commands-grid">
+                <div class="command-card">
+                    <span class="command-name">apt</span>
+                    <div class="command-tooltip">Advanced Package Tool (Debian/Ubuntu)</div>
+                    <div class="command-example">apt install package_name</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">apt-get</span>
+                    <div class="command-tooltip">APT package handling utility (older version)</div>
+                    <div class="command-example">apt-get update</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">dpkg</span>
+                    <div class="command-tooltip">Debian package manager</div>
+                    <div class="command-example">dpkg -i package.deb</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">yum</span>
+                    <div class="command-tooltip">Yellowdog Updater Modified (RHEL/CentOS)</div>
+                    <div class="command-example">yum install package_name</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">dnf</span>
+                    <div class="command-tooltip">Dandified YUM (Fedora/RHEL 8+)</div>
+                    <div class="command-example">dnf install package_name</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">rpm</span>
+                    <div class="command-tooltip">RPM Package Manager</div>
+                    <div class="command-example">rpm -i package.rpm</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">pacman</span>
+                    <div class="command-tooltip">Arch Linux package manager</div>
+                    <div class="command-example">pacman -S package_name</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">snap</span>
+                    <div class="command-tooltip">Universal Linux package manager</div>
+                    <div class="command-example">snap install package</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">flatpak</span>
+                    <div class="command-tooltip">Software deployment and package management for Linux</div>
+                    <div class="command-example">flatpak install app_name</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management Tab -->
+        <div class="tab-content" id="user-management">
+            <h2 class="category-title">User Management Commands</h2>
+            <div class="commands-grid">
+                <div class="command-card">
+                    <span class="command-name">useradd</span>
+                    <div class="command-tooltip">Create a new user</div>
+                    <div class="command-example">useradd -m username</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">userdel</span>
+                    <div class="command-tooltip">Delete a user account</div>
+                    <div class="command-example">userdel -r username</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">usermod</span>
+                    <div class="command-tooltip">Modify a user account</div>
+                    <div class="command-example">usermod -aG group username</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">passwd</span>
+                    <div class="command-tooltip">Change user password</div>
+                    <div class="command-example">passwd username</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">groupadd</span>
+                    <div class="command-tooltip">Create a new group</div>
+                    <div class="command-example">groupadd group_name</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">groupdel</span>
+                    <div class="command-tooltip">Delete a group</div>
+                    <div class="command-example">groupdel group_name</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">id</span>
+                    <div class="command-tooltip">Print user and group information</div>
+                    <div class="command-example">id username</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">who</span>
+                    <div class="command-tooltip">Show who is logged in</div>
+                    <div class="command-example">who</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">w</span>
+                    <div class="command-tooltip">Show who is logged in and what they are doing</div>
+                    <div class="command-example">w</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">last</span>
+                    <div class="command-tooltip">Show listing of last logged in users</div>
+                    <div class="command-example">last</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Info Tab -->
+        <div class="tab-content" id="system-info">
+            <h2 class="category-title">System Info & Monitoring Commands</h2>
+            <div class="commands-grid">
+                <div class="command-card">
+                    <span class="command-name">uname</span>
+                    <div class="command-tooltip">Print system information</div>
+                    <div class="command-example">uname -a</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">uptime</span>
+                    <div class="command-tooltip">Tell how long the system has been running</div>
+                    <div class="command-example">uptime</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">free</span>
+                    <div class="command-tooltip">Display amount of free and used memory</div>
+                    <div class="command-example">free -h</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">vmstat</span>
+                    <div class="command-tooltip">Report virtual memory statistics</div>
+                    <div class="command-example">vmstat 1 5</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">iostat</span>
+                    <div class="command-tooltip">Report CPU and I/O statistics</div>
+                    <div class="command-example">iostat -x 2</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">lscpu</span>
+                    <div class="command-tooltip">Display CPU architecture information</div>
+                    <div class="command-example">lscpu</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">lsusb</span>
+                    <div class="command-tooltip">List USB devices</div>
+                    <div class="command-example">lsusb</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">lspci</span>
+                    <div class="command-tooltip">List PCI devices</div>
+                    <div class="command-example">lspci</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">lspci</span>
+                    <div class="command-tooltip">List PCI devices</div>
+                    <div class="command-example">lspci</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">dmesg</span>
+                    <div class="command-tooltip">Print or control the kernel ring buffer</div>
+                    <div class="command-example">dmesg | grep error</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">journalctl</span>
+                    <div class="command-tooltip">Query systemd's journal</div>
+                    <div class="command-example">journalctl -u service-name</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">hostname</span>
+                    <div class="command-tooltip">Show or set system hostname</div>
+                    <div class="command-example">hostname</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compression Tab -->
+        <div class="tab-content" id="compression">
+            <h2 class="category-title">Compression & Archiving Commands</h2>
+            <div class="commands-grid">
+                <div class="command-card">
+                    <span class="command-name">tar</span>
+                    <div class="command-tooltip">Tape archiver utility</div>
+                    <div class="command-example">tar -czvf archive.tar.gz directory/</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">gzip</span>
+                    <div class="command-tooltip">Compress or expand files</div>
+                    <div class="command-example">gzip file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">gunzip</span>
+                    <div class="command-tooltip">Uncompress gzipped files</div>
+                    <div class="command-example">gunzip file.txt.gz</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">bzip2</span>
+                    <div class="command-tooltip">Block-sorting file compressor</div>
+                    <div class="command-example">bzip2 file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">bunzip2</span>
+                    <div class="command-tooltip">Uncompress bzip2 files</div>
+                    <div class="command-example">bunzip2 file.txt.bz2</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">xz</span>
+                    <div class="command-tooltip">XZ compression utility</div>
+                    <div class="command-example">xz file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">unxz</span>
+                    <div class="command-tooltip">Uncompress xz files</div>
+                    <div class="command-example">unxz file.txt.xz</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">zip</span>
+                    <div class="command-tooltip">Package and compress files</div>
+                    <div class="command-example">zip -r archive.zip directory/</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">unzip</span>
+                    <div class="command-tooltip">Extract compressed files in zip format</div>
+                    <div class="command-example">unzip archive.zip</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disk Tab -->
+        <div class="tab-content" id="disk">
+            <h2 class="category-title">Disk & Partitioning Commands</h2>
+            <div class="commands-grid">
+                <div class="command-card">
+                    <span class="command-name">df</span>
+                    <div class="command-tooltip">Report file system disk space usage</div>
+                    <div class="command-example">df -h</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">du</span>
+                    <div class="command-tooltip">Estimate file space usage</div>
+                    <div class="command-example">du -sh directory/</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">fdisk</span>
+                    <div class="command-tooltip">Manipulate disk partition table</div>
+                    <div class="command-example">fdisk -l /dev/sda</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">parted</span>
+                    <div class="command-tooltip">Disk partition manipulator</div>
+                    <div class="command-example">parted /dev/sda print</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">mkfs</span>
+                    <div class="command-tooltip">Build a Linux filesystem</div>
+                    <div class="command-example">mkfs.ext4 /dev/sda1</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">fsck</span>
+                    <div class="command-tooltip">Check and repair a Linux filesystem</div>
+                    <div class="command-example">fsck /dev/sda1</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">mount</span>
+                    <div class="command-tooltip">Mount a filesystem</div>
+                    <div class="command-example">mount /dev/sda1 /mnt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">umount</span>
+                    <div class="command-tooltip">Unmount filesystems</div>
+                    <div class="command-example">umount /mnt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">lsblk</span>
+                    <div class="command-tooltip">List block devices</div>
+                    <div class="command-example">lsblk</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Miscellaneous Tab -->
+        <div class="tab-content" id="misc">
+            <h2 class="category-title">Miscellaneous Utilities</h2>
+            <div class="commands-grid">
+                <div class="command-card">
+                    <span class="command-name">grep</span>
+                    <div class="command-tooltip">Search for patterns in files</div>
+                    <div class="command-example">grep "pattern" file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">sed</span>
+                    <div class="command-tooltip">Stream editor for filtering and transforming text</div>
+                    <div class="command-example">sed 's/old/new/g' file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">awk</span>
+                    <div class="command-tooltip">Pattern scanning and text processing language</div>
+                    <div class="command-example">awk '{print $1}' file.txt</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">date</span>
+                    <div class="command-tooltip">Display or change the date & time</div>
+                    <div class="command-example">date +"%Y-%m-%d %H:%M:%S"</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">cal</span>
+                    <div class="command-tooltip">Display a calendar</div>
+                    <div class="command-example">cal -3</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">history</span>
+                    <div class="command-tooltip">Command history</div>
+                    <div class="command-example">history | grep command</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">alias</span>
+                    <div class="command-tooltip">Create command aliases</div>
+                    <div class="command-example">alias ll='ls -la'</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">cron</span>
+                    <div class="command-tooltip">Schedule periodic background work</div>
+                    <div class="command-example">crontab -e</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">xargs</span>
+                    <div class="command-tooltip">Build and execute command lines from input</div>
+                    <div class="command-example">find . -name "*.log" | xargs rm</div>
+                </div>
+                <div class="command-card">
+                    <span class="command-name">watch</span>
+                    <div class="command-tooltip">Execute a program periodically, showing output</div>
+                    <div class="command-example">watch -n 1 'free -m'</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2025 Linux Command Cheat Sheet | A quick reference for common Linux commands</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-button');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to current tab
+                    this.classList.add('active');
+                    
+                    // Hide all tab contents
+                    const tabContents = document.querySelectorAll('.tab-content');
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Show the selected tab content
+                    const selectedTab = this.getAttribute('data-tab');
+                    document.getElementById(selectedTab).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
